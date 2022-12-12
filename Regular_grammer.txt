@@ -1,0 +1,6 @@
+expr : term ( ( '+' | '-' ) term )*
+term : factor ( ( '*' | '/' ) factor )*
+factor : ( '+' | '-' ) factor | power
+NAME : '[a-zA-Z_][a-zA-Z0-9_]*'
+NUMBER : '[0-9]+'
+STRING : '"[^"]*"'
