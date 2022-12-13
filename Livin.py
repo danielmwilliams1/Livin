@@ -1,3 +1,13 @@
+#<start> ::= <statement> | <statement> <start>
+#<statement> ::= <if> | <while> | <assign> | <print> | <block>
+#<if> ::= if <condition> then <start> else <start> end
+#<while> ::= while <condition> do <start> end
+#<condition> ::= <expression> <comparator> <expression>
+#<comparator> ::= < | > | <= | >= | == | !=
+#<assign> ::= <variable> = <expression>
+#<print> ::= print <expression>
+
+
 
 DIGITS = '0123456789'
 
@@ -302,6 +312,14 @@ class Parser:
                 return node 
     
     
+    RDA = {
+        My_INT: factor,
+        My_PLUS: factor,
+        My_MINUS: factor,
+        My_LPAREN: factor,
+        My_ID: factor,
+        My_EOF: None,
+    }
 ## keywords  
 KEYWORDS = [
     My_IF,
@@ -310,6 +328,24 @@ KEYWORDS = [
 ]
 
 ## Show wherer every rule set confomrs to LL Grammar
+
+## LL Grammar
+## expr : term ((PLUS | MINUS) term)*
+## term : factor ((MUL | DIV) factor)*
+## factor : (PLUS | MINUS) factor | INTEGER | LPAREN expr RPAREN
+
+## Parser
+## expr
+##  term
+##   factor
+##    INTEGER
+##    LPAREN expr RPAREN
+##    (PLUS | MINUS) factor
+##   (MUL | DIV) factor
+##  ((PLUS | MINUS) term)*
+
+## read in a file and run it
+
 
 
     
@@ -323,6 +359,31 @@ def run (text):
     ast = parser.parse()
     return ast.tree, ast.error
 
+## Create a LR Parser table for the grammar
+
+## LR Grammar
+# S -> E -> E + T -> E + T + F -> E + T + F + I
+# S -> E -> E + T -> E + T + F -> E + T + F - I
+## start with S
+## Statement -> Expression -> Expression + Term -> Expression + Term + Factor -> Expression + Term + Factor + Integer
+## expr : term ((PLUS | MINUS) term)*
+## term : factor ((MUL | DIV) factor)*
+## factor : (PLUS | MINUS) factor | INTEGER | LPAREN expr RPAREN
+
+
+##with open('Regular_grammer.txt', 'r') as f:
+  ##    text = f.read()
+    ##  print(run(text))
+##with open ('Testin2.py', 'r') as f:
+  ##  text = f.read()
+    ##print(run(text))
+##with open ('Testin3.py', 'r') as f:
+  ##  text = f.read()
+    ##print(run(text))
+##with open ('Testin4.py', 'r') as f:
+  ##  text = f.read()
+    ##print(run(text))
+    
     
 ##def run(text):
   ##  lexer = Lexer(text)
