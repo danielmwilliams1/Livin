@@ -1,6 +1,121 @@
-expr : term ( ( '+' | '-' ) term )*
-term : factor ( ( '*' | '/' ) factor )*
-factor : ( '+' | '-' ) factor | power
-NAME : '[a-zA-Z_][a-zA-Z0-9_]*'
-NUMBER : '[0-9]+'
-STRING : '"[^"]*"'
+<Stmt> --> <if_stmt> | <while_stmt> | <assign_stmt> | <print_stmt> | <block>
+<if_stmt> --> if <expr> then <Stmt> else <Stmt> end
+<while_stmt> --> while <expr> do <Stmt> end
+<assign_stmt> --> <id> = <expr>
+<print_stmt> --> print <expr>
+<block> --> begin <Stmt> {; <Stmt>} end
+<expr> --> <term> { (+|-) <term> }
+<term> --> <factor> { (*|/) <factor> }
+<factor> --> <id> | <int> | (<expr>)
+<id> --> <letter> { <letter> | <digit> }
+<int> --> <digit> { <digit> }
+<letter> --> a | b | ... | z | A | B | ... | Z
+<digit> --> 0 | 1 | ... | 9
+
+  
+  
+  [S → • E]
+[E → • T]
+[E → • ( E )]
+[T → • n]
+[T → • + T]
+[T → • T + n]
+  
+  
+  
+  RDA = {
+        My_INT: factor,
+        My_PLUS: factor,
+        My_MINUS: factor,
+        My_LPAREN: factor,
+        My_ID: factor,
+        My_EOF: None,
+}
+LR = {
+        My_INT: factor,
+        My_PLUS: factor,
+        My_MINUS: factor,
+        My_LPAREN: factor,
+        My_ID: factor,
+        My_EOF: None,
+}
+
+def factor():
+    if lookahead == My_INT:
+        match(My_INT)
+    elif lookahead == My_PLUS:
+        match(My_PLUS)
+        factor()
+    elif lookahead == My_MINUS:
+        match(My_MINUS)
+        factor()
+    elif lookahead == My_LPAREN:
+        match(My_LPAREN)
+        expr()
+        match(My_RPAREN)
+    elif lookahead == My_ID:
+        match(My_ID)
+    else:
+        raise SyntaxError("Syntax error")
+
+def expr():
+    factor()
+    while lookahead in (My_PLUS, My_MINUS):
+        if lookahead == My_PLUS:
+            match(My_PLUS)
+        elif lookahead == My_MINUS:
+            match(My_MINUS)
+        factor()
+
+def match(t):
+    global lookahead
+    if lookahead == t:
+        lookahead = lexan()
+    else:
+        raise SyntaxError("Syntax error")
+
+def lexan():
+    global text
+    if text == "":
+        return My_EOF
+    elif text[0] == "+":
+        text = text[1:]
+        return My_PLUS
+    elif text[0] == "-":
+        text = text[1:]
+        return My_MINUS
+    elif text[0] == "(":
+        text = text[1:]
+        return My_LPAREN
+    elif text[0] == ")":
+        text = text[1:]
+        return My_RPAREN
+    elif text[0].isdigit():
+        text = text[1:]
+        return My_INT
+    elif text[0].isalpha():
+        text = text[1:]
+        return My_ID
+    else:
+        raise SyntaxError("Syntax error")
+
+def parse(s):   
+    global text, lookahead
+    text = s
+    lookahead = lexan()
+    expr()
+    if lookahead != My_EOF:
+        raise SyntaxError("Syntax error")
+
+parse("1+2")
+parse("1+2+3")
+parse("1+2+3+4")
+parse("1+2+3+4+5")
+parse("1+2+3+4+5+6")
+parse("1+2+3+4+5+6+7")
+parse("1+2+3+4+5+6+7+8")
+parse("1+2+3+4+5+6+7+8+9")
+parse("1+2+3+4+5+6+7+8+9+10")
+parse("1+2+3+4+5+6+7+8+9+10+11")
+parse("1+2+3+4+5+6+7+8+9+10+11+12")
+parse("1+2+3+4+5+6+7+8+9+10+11+12+13")

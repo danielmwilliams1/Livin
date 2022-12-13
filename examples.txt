@@ -1,0 +1,12 @@
+(5+ 6 - 7 /2)
+
+(5*+) ## error 
+[INT:5, MUL:*, PLUS:+, RPAREN:)]
+2-( 5+4) *4
+[MINUS:-, LPAREN:(, INT:5, PLUS:+, INT:4, RPAREN:), MUL:*, INT:4]
+
+(2- 9) /*4 ## error
+INT:2, MINUS:-, INT:9, RPAREN:), DIV:/, MUL:*, INT:4]
+
+2- (5+4) /*4
+[MINUS:-, LPAREN:(, INT:5, PLUS:+, INT:4, RPAREN:)]
